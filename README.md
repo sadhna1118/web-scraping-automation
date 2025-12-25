@@ -26,4 +26,15 @@ It is designed to automate repetitive data collection tasks and can be scheduled
 
 ---
 
-## 📂 Project Structure
+## 🔍 Use of This Project
+
+Automates data collection from websites, reducing manual effort
+Extracts structured information for analysis and reporting
+Generates CSV and Excel reports automatically
+Helps in monitoring job listings, prices, and market trends
+Supports scheduled execution using Task Scheduler or Cron
+Useful for business intelligence and market research
+Improves productivity by eliminating repetitive tasks
+Provides real-world automation experience using Python
+Can be extended to scrape dynamic websites using Selenium
+Ideal for learning web scraping, automation, and data processing
