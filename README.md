@@ -1,4 +1,4 @@
-                                                                 # Web Scraping Automation using Python
+## Web Scraping Automation using Python
 
 ## 📌 Project Overview
 This project is a Python-based web scraping automation system that extracts data from websites and generates structured reports in CSV and Excel formats.  
