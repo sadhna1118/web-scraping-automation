@@ -1,8 +1,8 @@
 """
-Web Scraping Automation Dashboard
-A state-of-the-art web data extraction platform built with Streamlit & Python.
-Theme: Cyber Emerald & Obsidian Gold.
-Features multi-format export, SQLite audit logging, robots.txt compliance, and offline testing.
+Web Scraping Automation Studio
+An enterprise-grade, innovative web scraping and data extraction platform.
+Theme: Obsidian Sunset & Amber Gold (No Blue).
+Features visual extraction modes, pipeline tracker, SQLite audit timeline, and multi-format exports.
 """
 
 from datetime import datetime
@@ -32,8 +32,8 @@ from utils.logger import clear_ui_logs, get_logs_for_ui, setup_logger
 # Page Configuration & Global Setup
 # ---------------------------------------------------------
 st.set_page_config(
-    page_title="Web Scraping Automation",
-    page_icon="🕸️",
+    page_title="Web Scraping Automation Studio",
+    page_icon="⚡",
     layout="wide",
     initial_sidebar_state="expanded",
 )
@@ -46,209 +46,264 @@ init_db()
 DEMO_HTML_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "demo", "demo_page.html")
 
 # ---------------------------------------------------------
-# Advanced Custom Styling (Cyber Emerald & Obsidian Theme)
+# Advanced Custom Styling: Obsidian Sunset & Amber Gold (No Blue)
 # ---------------------------------------------------------
 st.markdown(
     """
     <style>
-        /* Import Inter Font */
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
         html, body, [class*="css"] {
-            font-family: 'Inter', sans-serif;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            color: #F8FAFC;
         }
 
-        /* Hero Header & Gradient Titles */
+        /* Hero Title & Branding */
+        .hero-banner {
+            background: linear-gradient(135deg, rgba(255, 94, 98, 0.1) 0%, rgba(255, 183, 94, 0.05) 50%, rgba(27, 27, 34, 0.8) 100%);
+            border: 1px solid rgba(255, 94, 98, 0.25);
+            border-radius: 16px;
+            padding: 24px 28px;
+            margin-bottom: 22px;
+            position: relative;
+            overflow: hidden;
+        }
         .hero-title {
-            font-size: 2.3rem;
+            font-size: 2.2rem;
             font-weight: 800;
-            background: linear-gradient(135deg, #10B981 0%, #34D399 35%, #6366F1 75%, #A855F7 100%);
+            background: linear-gradient(135deg, #FF5E62 0%, #FF8C42 40%, #FFB75E 100%);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
-            margin-bottom: 4px;
+            margin-bottom: 6px;
             letter-spacing: -0.02em;
         }
         .hero-subtitle {
             font-size: 0.95rem;
-            color: #94A3B8;
-            margin-bottom: 20px;
+            color: #A1A1AA;
             font-weight: 400;
+            line-height: 1.5;
         }
 
-        /* Feature Cards Grid */
-        .feature-grid {
+        /* Pipeline Stepper Bar */
+        .pipeline-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: #15151B;
+            border: 1px solid #272730;
+            border-radius: 12px;
+            padding: 12px 18px;
+            margin-bottom: 24px;
+        }
+        .pipeline-step {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            color: #71717A;
+        }
+        .pipeline-step.active {
+            color: #FFB75E;
+        }
+        .pipeline-step.completed {
+            color: #10B981;
+        }
+        .pipeline-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #3F3F46;
+        }
+        .pipeline-dot.active {
+            background: #FFB75E;
+            box-shadow: 0 0 8px #FFB75E;
+        }
+        .pipeline-dot.completed {
+            background: #10B981;
+            box-shadow: 0 0 8px #10B981;
+        }
+        .pipeline-arrow {
+            color: #3F3F46;
+            font-size: 0.85rem;
+        }
+
+        /* Interactive Feature Cards Grid */
+        .feature-deck {
             display: grid;
-            grid-template-columns: repeat(4, 1fr);
+            grid-template-columns: repeat(3, 1fr);
             gap: 14px;
             margin-bottom: 24px;
         }
-        .feature-card {
-            background: linear-gradient(145deg, rgba(22, 31, 48, 0.8) 0%, rgba(15, 23, 42, 0.9) 100%);
-            border: 1px solid rgba(16, 185, 129, 0.2);
-            border-radius: 12px;
-            padding: 16px 18px;
-            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        .mode-card {
+            background: #181820;
+            border: 1px solid #272732;
+            border-radius: 14px;
+            padding: 18px 20px;
+            transition: all 0.25s ease-in-out;
+            cursor: pointer;
             position: relative;
-            overflow: hidden;
         }
-        .feature-card::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 3px;
-            background: linear-gradient(90deg, #10B981, #6366F1);
-            opacity: 0.7;
+        .mode-card:hover {
+            transform: translateY(-3px);
+            border-color: rgba(255, 94, 98, 0.4);
+            box-shadow: 0 10px 25px -5px rgba(255, 94, 98, 0.15);
         }
-        .feature-card:hover {
-            transform: translateY(-2px);
-            border-color: rgba(16, 185, 129, 0.5);
-            box-shadow: 0 10px 20px -5px rgba(16, 185, 129, 0.15);
+        .mode-card.selected {
+            border-color: #FF5E62;
+            background: linear-gradient(145deg, #201D24 0%, #17171E 100%);
+            box-shadow: 0 8px 20px -4px rgba(255, 94, 98, 0.2);
         }
-        .feature-icon {
-            font-size: 1.5rem;
+        .mode-icon {
+            font-size: 1.6rem;
             margin-bottom: 8px;
         }
-        .feature-title {
-            font-size: 0.95rem;
+        .mode-title {
+            font-size: 1rem;
             font-weight: 700;
-            color: #F1F5F9;
+            color: #F8FAFC;
             margin-bottom: 4px;
         }
-        .feature-desc {
-            font-size: 0.78rem;
-            color: #94A3B8;
+        .mode-desc {
+            font-size: 0.8rem;
+            color: #A1A1AA;
             line-height: 1.4;
         }
 
-        /* Executive KPI Metrics */
-        .kpi-container {
+        /* KPI Cards Ribbon */
+        .kpi-deck {
             display: grid;
             grid-template-columns: repeat(4, 1fr);
             gap: 16px;
             margin-bottom: 24px;
         }
-        .kpi-card {
-            background: linear-gradient(145deg, #161F30 0%, #0E1626 100%);
-            border: 1px solid #1E293B;
-            border-radius: 12px;
+        .kpi-box {
+            background: linear-gradient(145deg, #1B1B24 0%, #13131A 100%);
+            border: 1px solid #262633;
+            border-radius: 14px;
             padding: 18px 20px;
+            box-shadow: 0 6px 14px rgba(0, 0, 0, 0.35);
             position: relative;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
         }
-        .kpi-title {
-            font-size: 0.8rem;
+        .kpi-box::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 3px;
+            border-radius: 14px 14px 0 0;
+            background: linear-gradient(90deg, #FF5E62, #FFB75E);
+        }
+        .kpi-label {
+            font-size: 0.75rem;
             text-transform: uppercase;
-            letter-spacing: 0.06em;
-            color: #94A3B8;
+            letter-spacing: 0.08em;
+            color: #A1A1AA;
             font-weight: 600;
             margin-bottom: 8px;
-            display: flex;
-            align-items: center;
-            gap: 6px;
         }
-        .kpi-value-emerald {
-            font-size: 2.1rem;
+        .kpi-val-amber {
+            font-size: 2.2rem;
             font-weight: 800;
-            color: #10B981;
-            line-height: 1.1;
+            color: #FFB75E;
+            line-height: 1;
         }
-        .kpi-value-violet {
-            font-size: 2.1rem;
+        .kpi-val-coral {
+            font-size: 2.2rem;
             font-weight: 800;
-            color: #A855F7;
-            line-height: 1.1;
+            color: #FF5E62;
+            line-height: 1;
         }
-        .kpi-value-cyan {
-            font-size: 1.3rem;
+        .kpi-val-mint {
+            font-size: 1.25rem;
             font-weight: 700;
-            color: #38BDF8;
+            color: #10B981;
             line-height: 1.3;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
         }
-        .kpi-value-gold {
-            font-size: 1.25rem;
+        .kpi-val-silver {
+            font-size: 1.15rem;
             font-weight: 700;
-            color: #F59E0B;
+            color: #E2E8F0;
             line-height: 1.3;
         }
 
-        /* Status Badges */
-        .status-badge {
+        /* Status Pills */
+        .status-pill {
             display: inline-flex;
             align-items: center;
             gap: 6px;
             padding: 5px 14px;
             border-radius: 9999px;
             font-size: 0.82rem;
-            font-weight: 600;
+            font-weight: 700;
             letter-spacing: 0.02em;
         }
         .status-ready {
-            background: rgba(148, 163, 184, 0.15);
-            color: #CBD5E1;
-            border: 1px solid rgba(148, 163, 184, 0.3);
+            background: rgba(161, 161, 170, 0.15);
+            color: #E4E4E7;
+            border: 1px solid rgba(161, 161, 170, 0.3);
         }
         .status-scraping {
-            background: rgba(245, 158, 11, 0.15);
-            color: #FCD34D;
-            border: 1px solid rgba(245, 158, 11, 0.4);
-            animation: pulse 1.5s infinite;
+            background: rgba(255, 183, 94, 0.18);
+            color: #FFB75E;
+            border: 1px solid rgba(255, 183, 94, 0.4);
+            animation: pulse-ring 1.5s infinite;
         }
         .status-completed {
-            background: rgba(16, 185, 129, 0.15);
-            color: #6EE7B7;
+            background: rgba(16, 185, 129, 0.18);
+            color: #34D399;
             border: 1px solid rgba(16, 185, 129, 0.4);
         }
         .status-failed {
-            background: rgba(239, 68, 68, 0.15);
-            color: #FCA5A5;
+            background: rgba(239, 68, 68, 0.18);
+            color: #F87171;
             border: 1px solid rgba(239, 68, 68, 0.4);
         }
 
-        /* Cyber Terminal Console */
-        .terminal-box {
-            background-color: #060911;
-            color: #10B981;
-            font-family: 'JetBrains Mono', Courier, monospace;
-            padding: 16px 20px;
-            border-radius: 10px;
-            border: 1px solid rgba(16, 185, 129, 0.25);
-            height: 330px;
+        /* Terminal Console */
+        .cyber-terminal {
+            background-color: #08080C;
+            color: #34D399;
+            font-family: 'JetBrains Mono', monospace;
+            padding: 18px 22px;
+            border-radius: 12px;
+            border: 1px solid #272732;
+            height: 340px;
             overflow-y: auto;
             font-size: 0.85rem;
             line-height: 1.6;
-            box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.6);
+            box-shadow: inset 0 3px 10px rgba(0, 0, 0, 0.7);
         }
-        .log-info { color: #38BDF8; }
-        .log-success { color: #34D399; font-weight: 600; }
-        .log-warning { color: #FBBF24; }
-        .log-error { color: #F87171; font-weight: 600; }
+        .term-info { color: #38BDF8; }
+        .term-success { color: #34D399; font-weight: 600; }
+        .term-warning { color: #FFB75E; }
+        .term-error { color: #FF5E62; font-weight: 600; }
 
-        /* Sidebar Styling */
+        /* Sidebar Brand Box */
         .sidebar-brand-box {
-            background: linear-gradient(135deg, rgba(16, 185, 129, 0.12) 0%, rgba(99, 102, 241, 0.12) 100%);
-            border: 1px solid rgba(16, 185, 129, 0.3);
-            border-radius: 10px;
-            padding: 12px 14px;
-            margin-bottom: 18px;
+            background: linear-gradient(135deg, rgba(255, 94, 98, 0.15) 0%, rgba(255, 183, 94, 0.1) 100%);
+            border: 1px solid rgba(255, 94, 98, 0.3);
+            border-radius: 12px;
+            padding: 14px 16px;
+            margin-bottom: 20px;
         }
-        .sidebar-brand {
+        .sidebar-brand-title {
             font-size: 1.15rem;
             font-weight: 800;
-            color: #10B981;
+            color: #FF8C42;
             display: flex;
             align-items: center;
             gap: 8px;
         }
-        .sidebar-sub {
+        .sidebar-brand-sub {
             font-size: 0.75rem;
-            color: #94A3B8;
+            color: #A1A1AA;
             margin-top: 4px;
         }
 
-        @keyframes pulse {
+        @keyframes pulse-ring {
             0% { opacity: 0.7; }
             50% { opacity: 1; }
             100% { opacity: 0.7; }
@@ -271,68 +326,67 @@ if "scrape_stats" not in st.session_state:
         "time": 0.0,
         "url": "None",
         "timestamp": "Never",
-        "type": "None",
+        "type": "Headings",
     }
 if "current_logs" not in st.session_state:
     st.session_state.current_logs = [
-        "[INFO] Web Scraping Engine initialized in standby mode.",
-        "[INFO] Select a public target or choose an instant preset to begin.",
+        "[INFO] Scraping Engine initialized in standby.",
+        "[INFO] Select an extraction mode or preset to begin.",
     ]
 if "url_input" not in st.session_state:
     st.session_state.url_input = "https://quotes.toscrape.com/"
 if "error_message" not in st.session_state:
     st.session_state.error_message = None
+if "active_mode" not in st.session_state:
+    st.session_state.active_mode = "Headings"
 
 
 # ---------------------------------------------------------
-# Sidebar Configuration Deck
+# Sidebar Controls & Presets
 # ---------------------------------------------------------
 with st.sidebar:
     st.markdown(
         """
         <div class="sidebar-brand-box">
-            <div class="sidebar-brand">🕸️ Scraping Engine</div>
-            <div class="sidebar-sub">Automated Extraction & Compliance Hub</div>
+            <div class="sidebar-brand-title">⚡ Scraping Studio</div>
+            <div class="sidebar-brand-sub">Enterprise Extraction & Compliance Engine</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-    # Preset Demo Websites
-    st.markdown("##### ⚡ Quick Target Presets")
-    demo_choice = st.selectbox(
-        "Choose Verified Demo Target:",
+    st.markdown("##### ⚡ Instant Target Presets")
+    demo_selection = st.selectbox(
+        "Load Target Preset:",
         [
-            "Select preset...",
-            "💬 Quotes to Scrape (Quotes & Authors)",
-            "📚 Books to Scrape (Titles & Pricing)",
-            "🧪 Local Test Bench (Zero Internet)",
-            "🌐 Wikipedia Sample (Structured Tables)",
+            "Custom URL...",
+            "💬 Quotes to Scrape (Quotes & Tags)",
+            "📚 Books to Scrape (Catalog & Prices)",
+            "🌐 Wikipedia Countries (Data Matrix)",
+            "🧪 Offline Test Bench (Zero Internet)",
         ],
         index=0,
     )
 
-    if demo_choice == "💬 Quotes to Scrape (Quotes & Authors)":
+    if demo_selection == "💬 Quotes to Scrape (Quotes & Tags)":
         st.session_state.url_input = "https://quotes.toscrape.com/"
-    elif demo_choice == "📚 Books to Scrape (Titles & Pricing)":
+    elif demo_selection == "📚 Books to Scrape (Catalog & Prices)":
         st.session_state.url_input = "https://books.toscrape.com/"
-    elif demo_choice == "🧪 Local Test Bench (Zero Internet)":
-        st.session_state.url_input = "http://demo.local/test-bench"
-    elif demo_choice == "🌐 Wikipedia Sample (Structured Tables)":
+    elif demo_selection == "🌐 Wikipedia Countries (Data Matrix)":
         st.session_state.url_input = "https://en.wikipedia.org/wiki/List_of_countries_by_GDP_(nominal)"
+    elif demo_selection == "🧪 Offline Test Bench (Zero Internet)":
+        st.session_state.url_input = "http://demo.local/test-bench"
 
     st.markdown("---")
 
-    # URL Input Field
     target_url = st.text_input(
         "🌐 Target Website URL",
         value=st.session_state.url_input,
         placeholder="https://example.com",
-        help="Input any public, unauthenticated HTTP or HTTPS webpage URL.",
+        help="Enter any public HTTP/HTTPS URL.",
     )
     st.session_state.url_input = target_url
 
-    # Scraping Type
     scrape_type = st.selectbox(
         "🎯 Extraction Target Mode",
         [
@@ -344,36 +398,34 @@ with st.sidebar:
             "Images",
         ],
         index=0,
-        help="Choose the HTML entity type to extract into structured rows.",
+        help="Select entity type to extract into clean rows.",
     )
+    st.session_state.active_mode = scrape_type
 
-    # Maximum Records
     max_records = st.slider(
-        "🔢 Record Limit Cap",
+        "🔢 Max Record Extraction Cap",
         min_value=5,
         max_value=300,
         value=50,
         step=5,
-        help="Controls the maximum number of extracted records returned.",
+        help="Maximum records extracted to avoid memory bloating.",
     )
 
-    # Advanced Settings
-    with st.expander("⚙️ Advanced Parameters"):
+    with st.expander("⚙️ Advanced Network Settings"):
         timeout_seconds = st.slider("HTTP Timeout (seconds)", min_value=3, max_value=30, value=10)
-        check_robots = st.checkbox("Audit robots.txt Before Crawl", value=False, help="Verifies crawling permissions against target site's robots.txt.")
+        check_robots = st.checkbox("Strict robots.txt Verification", value=False, help="Checks robots.txt crawling permission before requesting HTML.")
         custom_ua = st.text_input(
-            "Custom User-Agent Header",
+            "User-Agent Override",
             value="",
             placeholder="Default Chrome agent",
-            help="Custom user-agent string override.",
+            help="Custom user-agent string.",
         )
 
     st.markdown("---")
 
-    # Action Buttons
-    col_btn1, col_btn2 = st.columns(2)
-    start_clicked = col_btn1.button("🚀 Launch Scrape", type="primary", use_container_width=True)
-    clear_clicked = col_btn2.button("🔄 Reset Canvas", use_container_width=True)
+    col_b1, col_b2 = st.columns(2)
+    start_clicked = col_b1.button("🚀 Start Scraping", type="primary", use_container_width=True)
+    clear_clicked = col_b2.button("🔄 Reset View", use_container_width=True)
 
     if clear_clicked:
         st.session_state.scraped_data = None
@@ -384,10 +436,10 @@ with st.sidebar:
             "time": 0.0,
             "url": "None",
             "timestamp": "Never",
-            "type": "None",
+            "type": "Headings",
         }
         st.session_state.current_logs = [
-            "[INFO] Workspace reset.",
+            "[INFO] Canvas cleared.",
             "[INFO] Ready for new extraction task.",
         ]
         st.rerun()
@@ -401,7 +453,6 @@ if start_clicked:
     st.session_state.scrape_status = "Scraping..."
     st.session_state.current_logs = []
 
-    # Check if user picked the local test bench
     if target_url.strip() in ("http://demo.local/test-bench", "demo.local"):
         st.session_state.current_logs.append("[INFO] Loading offline local HTML test bench...")
         try:
@@ -432,7 +483,6 @@ if start_clicked:
                 logs=[f"[ERROR] {str(exc)}"],
             )
     else:
-        # Standard live HTTP scrape
         scraper = WebScraper(
             timeout=timeout_seconds,
             user_agent=custom_ua.strip() if custom_ua.strip() else DEFAULT_USER_AGENT,
@@ -445,7 +495,6 @@ if start_clicked:
             custom_user_agent=custom_ua.strip() if custom_ua.strip() else None,
         )
 
-    # Process and record results
     now_str = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     st.session_state.current_logs = result.logs
 
@@ -459,8 +508,6 @@ if start_clicked:
             "timestamp": now_str,
             "type": result.scrape_type,
         }
-
-        # Save to SQLite History
         save_history(
             url=result.url,
             scrape_type=result.scrape_type,
@@ -470,10 +517,9 @@ if start_clicked:
             preview_df=result.data,
         )
     elif result.success and (result.data is None or result.data.empty):
-        # 0 records found but request was technically 200 OK
         st.session_state.scrape_status = "Completed"
         st.session_state.scraped_data = pd.DataFrame()
-        st.session_state.error_message = result.error_message or f"ℹ️ 0 {scrape_type} records found on this page."
+        st.session_state.error_message = result.error_message or f"ℹ️ 0 {scrape_type} records found on this webpage."
         st.session_state.scrape_stats = {
             "records": 0,
             "time": result.execution_time,
@@ -500,8 +546,6 @@ if start_clicked:
             "timestamp": now_str,
             "type": result.scrape_type,
         }
-
-        # Save failure to SQLite
         save_history(
             url=result.url,
             scrape_type=result.scrape_type,
@@ -513,19 +557,24 @@ if start_clicked:
 
 
 # ---------------------------------------------------------
-# Top Header & Status Section
+# Top Section: Hero Banner & Status
 # ---------------------------------------------------------
-col_head_left, col_head_right = st.columns([3, 1])
-with col_head_left:
-    st.markdown('<div class="hero-title">🕸️ Web Scraping Automation</div>', unsafe_allow_html=True)
+col_banner_left, col_banner_right = st.columns([3, 1])
+
+with col_banner_left:
     st.markdown(
-        '<div class="hero-subtitle">'
-        'Automated Web Data Extraction, Ethical Auditing & Analytical Export Platform • Built with Python & Streamlit'
-        '</div>',
+        """
+        <div class="hero-banner">
+            <div class="hero-title">⚡ Web Scraping Automation Studio</div>
+            <div class="hero-subtitle">
+                Automated Web Data Mining, Ethical Compliance Auditing & Multi-Format Analytical Export Engine
+            </div>
+        </div>
+        """,
         unsafe_allow_html=True,
     )
 
-with col_head_right:
+with col_banner_right:
     status_label = st.session_state.scrape_status
     if status_label == "Ready":
         badge_cls = "status-ready"
@@ -542,9 +591,9 @@ with col_head_right:
 
     st.markdown(
         f"""
-        <div style="text-align: right; padding-top: 10px;">
-            <span style="color: #94A3B8; font-size: 0.8rem; margin-right: 8px;">ENGINE STATUS:</span>
-            <span class="status-badge {badge_cls}">{icon} {status_label}</span>
+        <div style="background: #181820; border: 1px solid #272732; border-radius: 14px; padding: 18px 20px; text-align: center; margin-top: 4px;">
+            <div style="color: #A1A1AA; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.08em; margin-bottom: 8px;">ENGINE STATUS</div>
+            <div class="status-pill {badge_cls}">{icon} {status_label}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -552,30 +601,39 @@ with col_head_right:
 
 
 # ---------------------------------------------------------
-# Section 1: Redesigned Feature Highlights Grid
+# Section 1: Live Pipeline Stepper Visualizer
 # ---------------------------------------------------------
+step1_cls = "completed" if st.session_state.scrape_status in ("Completed", "Scraping...") else "active"
+step2_cls = "completed" if st.session_state.scrape_status == "Completed" else ("active" if st.session_state.scrape_status == "Scraping..." else "")
+step3_cls = "completed" if st.session_state.scrape_status == "Completed" else ""
+step4_cls = "completed" if st.session_state.scrape_status == "Completed" else ""
+
 st.markdown(
-    """
-    <div class="feature-grid">
-        <div class="feature-card">
-            <div class="feature-icon">🏷️</div>
-            <div class="feature-title">Headings Hierarchy</div>
-            <div class="feature-desc">Extracts H1–H6 elements in visual order for document structure & SEO auditing.</div>
+    f"""
+    <div class="pipeline-container">
+        <div class="pipeline-step {step1_cls}">
+            <div class="pipeline-dot {step1_cls}"></div>
+            <span>1. Schema & SSRF Guard</span>
         </div>
-        <div class="feature-card">
-            <div class="feature-icon">🔗</div>
-            <div class="feature-title">Hyperlink Harvester</div>
-            <div class="feature-desc">Resolves relative paths to absolute URLs and classifies internal vs external links.</div>
+        <div class="pipeline-arrow">➔</div>
+        <div class="pipeline-step {step2_cls}">
+            <div class="pipeline-dot {step2_cls}"></div>
+            <span>2. robots.txt Verification</span>
         </div>
-        <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <div class="feature-title">Table Structuring</div>
-            <div class="feature-desc">Auto-detects thead/tbody headers, pads irregular rows, and converts tables to DataFrames.</div>
+        <div class="pipeline-arrow">➔</div>
+        <div class="pipeline-step {step2_cls}">
+            <div class="pipeline-dot {step2_cls}"></div>
+            <span>3. HTTP Handshake</span>
         </div>
-        <div class="feature-card">
-            <div class="feature-icon">🛡️</div>
-            <div class="feature-title">Robots & SSRF Guard</div>
-            <div class="feature-desc">Audits robots.txt directives and blocks private IP ranges to ensure ethical compliance.</div>
+        <div class="pipeline-arrow">➔</div>
+        <div class="pipeline-step {step3_cls}">
+            <div class="pipeline-dot {step3_cls}"></div>
+            <span>4. DOM Parse & Deduplication</span>
+        </div>
+        <div class="pipeline-arrow">➔</div>
+        <div class="pipeline-step {step4_cls}">
+            <div class="pipeline-dot {step4_cls}"></div>
+            <span>5. Tabular Data Ready</span>
         </div>
     </div>
     """,
@@ -584,16 +642,104 @@ st.markdown(
 
 
 # ---------------------------------------------------------
-# Section 2: Executive KPI Ribbon (Metric Cards)
+# Section 2: Innovative Extraction Modes Grid
+# ---------------------------------------------------------
+st.markdown("##### 🎯 Supported Extraction Engines")
+col_card1, col_card2, col_card3 = st.columns(3)
+
+with col_card1:
+    h_selected = "selected" if st.session_state.active_mode == "Headings" else ""
+    st.markdown(
+        f"""
+        <div class="mode-card {h_selected}">
+            <div class="mode-icon">🏷️</div>
+            <div class="mode-title">Headings Architecture</div>
+            <div class="mode-desc">Extracts visual H1–H6 hierarchy with level tags and character counts for SEO audits.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with col_card2:
+    l_selected = "selected" if st.session_state.active_mode == "Links" else ""
+    st.markdown(
+        f"""
+        <div class="mode-card {l_selected}">
+            <div class="mode-icon">🔗</div>
+            <div class="mode-title">Hyperlink Harvester</div>
+            <div class="mode-desc">Resolves relative paths to absolute URLs and classifies internal vs external domain links.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with col_card3:
+    t_selected = "selected" if st.session_state.active_mode == "Tables" else ""
+    st.markdown(
+        f"""
+        <div class="mode-card {t_selected}">
+            <div class="mode-icon">📊</div>
+            <div class="mode-title">Tabular Data Matrix</div>
+            <div class="mode-desc">Auto-synthesizes missing headers, pads irregular rows, and normalizes table grids into DataFrames.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+col_card4, col_card5, col_card6 = st.columns(3)
+with col_card4:
+    p_selected = "selected" if st.session_state.active_mode == "Paragraphs" else ""
+    st.markdown(
+        f"""
+        <div class="mode-card {p_selected}">
+            <div class="mode-icon">📝</div>
+            <div class="mode-title">Content & Prose Miner</div>
+            <div class="mode-desc">Eliminates excess whitespace, filters empty tags, and calculates word & character density.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with col_card5:
+    m_selected = "selected" if st.session_state.active_mode == "Page Title" else ""
+    st.markdown(
+        f"""
+        <div class="mode-card {m_selected}">
+            <div class="mode-icon">🌐</div>
+            <div class="mode-title">Meta & OpenGraph</div>
+            <div class="mode-desc">Captures document titles, meta descriptions, and canonical URLs for metadata governance.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+with col_card6:
+    i_selected = "selected" if st.session_state.active_mode == "Images" else ""
+    st.markdown(
+        f"""
+        <div class="mode-card {i_selected}">
+            <div class="mode-icon">🖼️</div>
+            <div class="mode-title">Media Asset Collector</div>
+            <div class="mode-desc">Extracts normalized image sources, alt text descriptions, and filters data-URI placeholders.</div>
+        </div>
+        """,
+        unsafe_allow_html=True,
+    )
+
+st.markdown("<div style='margin-bottom: 24px;'></div>", unsafe_allow_html=True)
+
+
+# ---------------------------------------------------------
+# Section 3: Executive KPI Deck
 # ---------------------------------------------------------
 col_m1, col_m2, col_m3, col_m4 = st.columns(4)
 
 with col_m1:
     st.markdown(
         f"""
-        <div class="kpi-card">
-            <div class="kpi-title">📊 Records Extracted</div>
-            <div class="kpi-value-emerald">{st.session_state.scrape_stats['records']}</div>
+        <div class="kpi-box">
+            <div class="kpi-label">📊 Records Captured</div>
+            <div class="kpi-val-amber">{st.session_state.scrape_stats['records']}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -602,9 +748,9 @@ with col_m1:
 with col_m2:
     st.markdown(
         f"""
-        <div class="kpi-card">
-            <div class="kpi-title">⚡ Execution Latency</div>
-            <div class="kpi-value-violet">{st.session_state.scrape_stats['time']:.2f}s</div>
+        <div class="kpi-box">
+            <div class="kpi-label">⚡ Execution Latency</div>
+            <div class="kpi-val-coral">{st.session_state.scrape_stats['time']:.2f}s</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -618,9 +764,9 @@ with col_m3:
 
     st.markdown(
         f"""
-        <div class="kpi-card">
-            <div class="kpi-title">🌐 Target Host</div>
-            <div class="kpi-value-cyan" title="{domain_display}">{domain_display}</div>
+        <div class="kpi-box">
+            <div class="kpi-label">🌐 Target Host</div>
+            <div class="kpi-val-mint" title="{domain_display}">{domain_display}</div>
         </div>
         """,
         unsafe_allow_html=True,
@@ -631,15 +777,15 @@ with col_m4:
     display_time = last_time.split(' ')[-1] if last_time != "Never" else "Never"
     st.markdown(
         f"""
-        <div class="kpi-card">
-            <div class="kpi-title">🕒 Timestamp</div>
-            <div class="kpi-value-gold">{display_time}</div>
+        <div class="kpi-box">
+            <div class="kpi-label">🕒 Timestamp</div>
+            <div class="kpi-val-silver">{display_time}</div>
         </div>
         """,
         unsafe_allow_html=True,
     )
 
-# Error Banner
+# Error / Notification Banner
 if st.session_state.error_message:
     if "ℹ️" in st.session_state.error_message:
         st.info(st.session_state.error_message)
@@ -648,19 +794,19 @@ if st.session_state.error_message:
 
 
 # ---------------------------------------------------------
-# Section 3: Interactive Workspace Tabs
+# Section 4: Interactive Workspace Tabs
 # ---------------------------------------------------------
 tab_data, tab_logs, tab_history, tab_robots, tab_demo, tab_guide = st.tabs([
-    "📊 Scraped Data Hub",
-    "⚡ Live Telemetry Logs",
-    "🗄️ SQLite Audit History",
-    "🛡️ robots.txt Auditor",
-    "🧪 Offline Test Bench",
-    "💡 Technical Architecture & Pitch",
+    "📊 Scraped Data Studio",
+    "⚡ Realtime Telemetry",
+    "🗄️ SQLite Audit Timeline",
+    "🛡️ Compliance & robots.txt",
+    "🧪 Zero-Internet Test Bench",
+    "💡 Interviewer Guide & Architecture",
 ])
 
 # ---------------------------------------------------------
-# Tab 1: Scraped Data Hub
+# Tab 1: Scraped Data Studio
 # ---------------------------------------------------------
 with tab_data:
     df_current = st.session_state.scraped_data
@@ -704,8 +850,8 @@ with tab_data:
 
         with col_info:
             st.markdown(
-                f"<div style='text-align: right; padding-top: 8px; color: #10B981; font-weight: 600; font-size: 0.9rem;'>"
-                f"✅ Extracted {len(df_current)} Rows × {len(df_current.columns)} Columns"
+                f"<div style='text-align: right; padding-top: 8px; color: #FFB75E; font-weight: 700; font-size: 0.9rem;'>"
+                f"✅ Extracted {len(df_current):,} Rows × {len(df_current.columns)} Columns"
                 f"</div>",
                 unsafe_allow_html=True,
             )
@@ -720,34 +866,34 @@ with tab_data:
     elif df_current is not None and df_current.empty:
         st.warning("⚠️ Request returned HTTP 200 OK, but 0 matching elements were found on the page.")
     else:
-        st.info("👋 Ready to scrape. Enter a target URL in the sidebar or pick a preset, then click **'🚀 Launch Scrape'**.")
+        st.info("👋 Studio is ready. Enter a target URL in the sidebar or pick an instant preset, then click **'🚀 Start Scraping'**.")
 
 
 # ---------------------------------------------------------
-# Tab 2: Live Telemetry Logs
+# Tab 2: Realtime Telemetry
 # ---------------------------------------------------------
 with tab_logs:
     col_log_head, col_log_clear = st.columns([5, 1])
-    col_log_head.markdown("#### ⚡ Realtime Network & Parsing Telemetry")
-    if col_log_clear.button("Clear Log View", use_container_width=True):
-        st.session_state.current_logs = ["[INFO] Telemetry buffer cleared."]
+    col_log_head.markdown("#### ⚡ Network & Extraction Event Stream")
+    if col_log_clear.button("Clear Log Stream", use_container_width=True):
+        st.session_state.current_logs = ["[INFO] Telemetry stream cleared."]
         st.rerun()
 
     log_html_lines = []
     for line in st.session_state.current_logs:
         if "[ERROR]" in line:
-            cls = "log-error"
+            cls = "term-error"
         elif "[WARNING]" in line:
-            cls = "log-warning"
+            cls = "term-warning"
         elif "[SUCCESS]" in line:
-            cls = "log-success"
+            cls = "term-success"
         else:
-            cls = "log-info"
+            cls = "term-info"
         log_html_lines.append(f"<div class='{cls}'>{line}</div>")
 
     st.markdown(
         f"""
-        <div class="terminal-box">
+        <div class="cyber-terminal">
             {''.join(log_html_lines)}
         </div>
         """,
@@ -757,32 +903,29 @@ with tab_logs:
 
 
 # ---------------------------------------------------------
-# Tab 3: SQLite Audit History
+# Tab 3: SQLite Audit Timeline
 # ---------------------------------------------------------
 with tab_history:
-    st.markdown("#### 🗄️ Relational Audit Trail (SQLite)")
+    st.markdown("#### 🗄️ Relational Audit Timeline (SQLite)")
 
-    # Aggregate Statistics
     db_stats = get_stats()
     col_h1, col_h2, col_h3, col_h4 = st.columns(4)
     col_h1.metric("Cumulative Jobs", db_stats["total_scrapes"])
-    col_h2.metric("Successful Jobs", db_stats["successful"])
+    col_h2.metric("Successful Scrapes", db_stats["successful"])
     col_h3.metric("Success Rate", f"{db_stats['success_rate']}%")
     col_h4.metric("Total Records Saved", f"{db_stats['total_records']:,}")
 
     st.markdown("---")
 
-    # Filters
     col_f1, col_f2, col_f3 = st.columns([3, 2, 1])
-    search_term = col_f1.text_input("🔍 Search History by Domain or Mode", placeholder="e.g. quotes, books, headings...")
-    status_sel = col_f2.selectbox("Filter Status", ["All", "Success", "Failed"])
+    search_term = col_f1.text_input("🔍 Search History by Keyword or Domain", placeholder="e.g. quotes, books, headings...")
+    status_sel = col_f2.selectbox("Filter Job Status", ["All", "Success", "Failed"])
 
-    if col_f3.button("🗑️ Clear History", use_container_width=True, help="Wipes all historical entries from SQLite"):
+    if col_f3.button("🗑️ Wipe History", use_container_width=True, help="Permanently clear SQLite history database"):
         clear_history()
-        st.success("Scraping history cleared successfully.")
+        st.success("History database wiped cleanly.")
         st.rerun()
 
-    # Load History Table
     df_history = get_history(search_query=search_term, status_filter=status_sel, limit=50)
 
     if not df_history.empty:
@@ -795,8 +938,7 @@ with tab_history:
             },
         )
 
-        # Inspect Record Detail
-        st.markdown("##### 🔎 Stored Data Preview Inspector")
+        st.markdown("##### 🔎 Stored Snapshot Inspector")
         job_ids = df_history["Job ID"].tolist()
         selected_job_id = st.selectbox("Select Job ID to view stored preview:", job_ids)
 
@@ -817,7 +959,7 @@ with tab_history:
 
 
 # ---------------------------------------------------------
-# Tab 4: robots.txt Auditor & Ethical Scraping
+# Tab 4: Compliance & robots.txt
 # ---------------------------------------------------------
 with tab_robots:
     st.markdown("#### 🛡️ Compliance & robots.txt Protocol Auditor")
@@ -828,7 +970,7 @@ with tab_robots:
 
     col_r1, col_r2 = st.columns([3, 1])
     test_url = col_r1.text_input("Enter URL to audit:", value=st.session_state.url_input)
-    audit_clicked = col_r2.button("🔍 Run Policy Audit", use_container_width=True)
+    audit_clicked = col_r2.button("🔍 Run Compliance Audit", use_container_width=True)
 
     if audit_clicked and test_url:
         with st.spinner("Analyzing target robots.txt policy..."):
@@ -852,12 +994,12 @@ with tab_robots:
 
 
 # ---------------------------------------------------------
-# Tab 5: Built-in Offline Test Bench
+# Tab 5: Zero-Internet Test Bench
 # ---------------------------------------------------------
 with tab_demo:
     st.markdown("#### 🧪 Zero-Dependency Offline Test Bench")
     st.write(
-        "Need to demonstrate the scraper in an environment with unstable Wi-Fi or firewall restrictions? "
+        "Demonstrate the scraper in an environment with unstable Wi-Fi or firewall restrictions. "
         "This runs the extraction pipeline against an internal mock HTML document with complete data fidelity."
     )
 
@@ -891,7 +1033,7 @@ with tab_demo:
                 execution_time=result.execution_time,
                 preview_df=result.data,
             )
-            st.success(f"Successfully extracted {result.record_count} records from the offline test bench! Check the '📊 Scraped Data Hub' tab.")
+            st.success(f"Successfully extracted {result.record_count} records from the offline test bench! Check the '📊 Scraped Data Studio' tab.")
         else:
             st.error("Demo HTML file not found.")
 
@@ -927,9 +1069,9 @@ with tab_guide:
 st.markdown("---")
 st.markdown(
     """
-    <div style="text-align: center; color: #64748B; font-size: 0.85rem; padding: 15px 0;">
-        <span style="color: #10B981; font-weight: 700;">Web Scraping Automation Platform</span> • Production & Interview Ready<br>
-        Crafted with Python 3.12, Streamlit, Requests, BeautifulSoup4, Pandas, OpenPyXL & SQLite • Hosted on Render
+    <div style="text-align: center; color: #71717A; font-size: 0.85rem; padding: 15px 0;">
+        <span style="color: #FF8C42; font-weight: 700;">Web Scraping Automation Studio</span> • Production & Interview Ready<br>
+        Engineered with Python 3.12, Streamlit, Requests, BeautifulSoup4, Pandas, OpenPyXL & SQLite • Hosted on Render
     </div>
     """,
     unsafe_allow_html=True,

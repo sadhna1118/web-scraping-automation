@@ -39,8 +39,8 @@ def export_to_excel(df: pd.DataFrame, sheet_name: str = "Scraped_Data") -> bytes
         workbook = writer.book
         worksheet = writer.sheets[sheet_name[:31]]
 
-        # Define Styles (Cyber Emerald Theme)
-        header_fill = PatternFill(start_color="065F46", end_color="065F46", fill_type="solid")
+        # Define Styles (Sunset Coral Theme - No Blue)
+        header_fill = PatternFill(start_color="EA580C", end_color="EA580C", fill_type="solid")
         header_font = Font(name="Calibri", size=11, bold=True, color="FFFFFF")
         regular_font = Font(name="Calibri", size=10)
         thin_border = Border(
